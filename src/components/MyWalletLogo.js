@@ -1,8 +1,9 @@
+import { Link } from "react-router-dom"
 import styled from "styled-components"
 
 export default function MyWalletLogo() {
     return (
-        <Text>MyWallet</Text>
+        <Link to='/'><Text>MyWallet</Text></Link>
     )
 }
 

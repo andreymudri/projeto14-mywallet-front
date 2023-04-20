@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-export default function TransactionsPage() {
+export default function TransactionsPage({token}) {
   return (
     <TransactionsContainer>
       <h1>Nova TRANSAÇÃO</h1>
