@@ -28,6 +28,7 @@ export default function SignInPage() {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("name", res.data.name)
+        localStorage.setItem("email", res.data.email)
         setToken(localStorage.getItem("token"));
 
         setUser(res.data);

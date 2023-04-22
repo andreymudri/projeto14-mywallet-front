@@ -11,8 +11,9 @@ import { useNavigate } from "react-router-dom";
 export default function HomePage() {
   const [data, setData] = useState([]);
   const { user } = useContext(UserContext);
-  const tokenlocal = localStorage.getItem("token")
+  const tokenlocal = localStorage.getItem("token");
   const navigate = useNavigate();
+  if (!tokenlocal) navigate("/");
   useEffect(() => {
     const config = {
       headers: {
@@ -33,7 +34,7 @@ export default function HomePage() {
     return new Date(b.date) - new Date(a.date);
   });
   const fixedTransactions = sortedTransactions.map((t) => {
-    return { ...t, value: parseFloat(t.value.replace(",", ".")) };
+    return { ...t, value: parseFloat(t.value) };
   });
 
   const entries = fixedTransactions.filter((t) => t.tipo === "inbound");
@@ -43,11 +44,15 @@ export default function HomePage() {
     entries.reduce((acc, t) => acc + parseFloat(t.value), 0) -
     exits.reduce((acc, t) => acc + parseFloat(t.value), 0);
 
+  function logout() {
+    localStorage.removeItem("token");
+    navigate("/");
+  }
   return (
     <HomeContainer>
       <Header>
         <h1>Olá, {localStorage.getItem("name")}</h1>
-        <BiExit />
+        <BiExit onClick={() => logout()} />
       </Header>
 
       <TransactionsContainer>
@@ -58,7 +63,14 @@ export default function HomePage() {
                 <span>{t.date}</span>
                 <strong>{t.description}</strong>
               </div>
-              <Value color={t.tipo}>R$ {t.value}</Value>
+              <Value color={t.tipo}>
+                R${" "}
+                {t.value.toLocaleString("pt-br", {
+                  style: "decimal",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Value>
             </ListItemContainer>
           ))}
         </ul>
@@ -77,13 +89,13 @@ export default function HomePage() {
       </TransactionsContainer>
 
       <ButtonsContainer>
-        <button onClick={()=> navigate('/nova-transacao/inbound')}>
+        <button onClick={() => navigate("/nova-transacao/inbound")}>
           <AiOutlinePlusCircle />
           <p>
             Nova <br /> entrada
           </p>
         </button>
-        <button onClick={()=> navigate('/nova-transacao/outbound')}>
+        <button onClick={() => navigate("/nova-transacao/outbound")}>
           <AiOutlineMinusCircle />
           <p>
             Nova <br />
