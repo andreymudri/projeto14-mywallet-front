@@ -1,6 +1,18 @@
 import styled from "styled-components"
+import { useParams } from 'react-router-dom';
+import { useState } from "react";
 
-export default function TransactionsPage({token}) {
+export default function TransactionsPage() {
+  const { tipo } = useParams();
+
+  const [value, setValue] = useState(0);
+  const objeto = {
+    tipo,
+    email: "",
+    value: value,
+    date: "",
+    description:""
+  }
   return (
     <TransactionsContainer>
       <h1>Nova TRANSAÇÃO</h1>

@@ -1,61 +1,104 @@
-import styled from "styled-components"
-import { BiExit } from "react-icons/bi"
-import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
+import styled from "styled-components";
+import { BiExit } from "react-icons/bi";
+import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
+import { apiUrl } from "../App";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import UserContext from "../components/Context/UserContext";
+import TokenContext from "../components/Context/TokenContext";
+import { useNavigate } from "react-router-dom";
 
-export default function HomePage({token}) {
+export default function HomePage() {
+  const [data, setData] = useState([]);
+  const { user } = useContext(UserContext);
+  const tokenlocal = localStorage.getItem("token")
+  const navigate = useNavigate();
+  useEffect(() => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${tokenlocal}`,
+      },
+    };
+    axios
+      .get(`${apiUrl}/transacoes`, config)
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [tokenlocal]);
+
+  const sortedTransactions = data.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  });
+  const fixedTransactions = sortedTransactions.map((t) => {
+    return { ...t, value: parseFloat(t.value.replace(",", ".")) };
+  });
+
+  const entries = fixedTransactions.filter((t) => t.tipo === "inbound");
+  const exits = fixedTransactions.filter((t) => t.tipo === "outbound");
+
+  const balance =
+    entries.reduce((acc, t) => acc + parseFloat(t.value), 0) -
+    exits.reduce((acc, t) => acc + parseFloat(t.value), 0);
+
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, Fulano</h1>
+        <h1>Olá, {localStorage.getItem("name")}</h1>
         <BiExit />
       </Header>
 
       <TransactionsContainer>
         <ul>
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
-
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
+          {sortedTransactions.map((t) => (
+            <ListItemContainer key={t.id}>
+              <div>
+                <span>{t.date}</span>
+                <strong>{t.description}</strong>
+              </div>
+              <Value color={t.tipo}>R$ {t.value}</Value>
+            </ListItemContainer>
+          ))}
         </ul>
 
         <article>
           <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
+          <Value color={balance >= 0 ? "inbound" : "outbound"}>
+            R${" "}
+            {balance.toLocaleString("pt-br", {
+              style: "decimal",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </Value>
         </article>
       </TransactionsContainer>
 
-
       <ButtonsContainer>
-        <button>
+        <button onClick={()=> navigate('/nova-transacao/inbound')}>
           <AiOutlinePlusCircle />
-          <p>Nova <br /> entrada</p>
+          <p>
+            Nova <br /> entrada
+          </p>
         </button>
-        <button>
+        <button onClick={()=> navigate('/nova-transacao/outbound')}>
           <AiOutlineMinusCircle />
-          <p>Nova <br />saída</p>
+          <p>
+            Nova <br />
+            saída
+          </p>
         </button>
       </ButtonsContainer>
-
     </HomeContainer>
-  )
+  );
 }
-
 const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: calc(100vh - 50px);
-`
+`;
 const Header = styled.header`
   display: flex;
   align-items: center;
@@ -64,7 +107,7 @@ const Header = styled.header`
   margin-bottom: 15px;
   font-size: 26px;
   color: white;
-`
+`;
 const TransactionsContainer = styled.article`
   flex-grow: 1;
   background-color: #fff;
@@ -73,22 +116,23 @@ const TransactionsContainer = styled.article`
   padding: 16px;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
   justify-content: space-between;
   article {
     display: flex;
-    justify-content: space-between;   
+    justify-content: space-between;
     strong {
       font-weight: 700;
       text-transform: uppercase;
     }
   }
-`
+`;
 const ButtonsContainer = styled.section`
   margin-top: 15px;
   margin-bottom: 0;
   display: flex;
   gap: 15px;
-  
+
   button {
     width: 50%;
     height: 115px;
@@ -101,12 +145,12 @@ const ButtonsContainer = styled.section`
       font-size: 18px;
     }
   }
-`
+`;
 const Value = styled.div`
   font-size: 16px;
   text-align: right;
-  color: ${(props) => (props.color === "positivo" ? "green" : "red")};
-`
+  color: ${(props) => (props.color === "inbound" ? "green" : "red")};
+`;
 const ListItemContainer = styled.li`
   display: flex;
   justify-content: space-between;
@@ -118,4 +162,4 @@ const ListItemContainer = styled.li`
     color: #c6c6c6;
     margin-right: 10px;
   }
-`
+`;

@@ -2,16 +2,20 @@ import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import MyWalletLogo from "../components/MyWalletLogo";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { apiUrl } from "../App";
+import UserContext from "../components/Context/UserContext";
+import TokenContext from "../components/Context/TokenContext";
 
-export default function SignInPage({ setToken }) {
+export default function SignInPage() {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");  
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  
+  const { user, setUser } = useContext(UserContext);
+  const {setToken} = useContext(TokenContext)
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -22,8 +26,12 @@ export default function SignInPage({ setToken }) {
   };
     axios.post(`${apiUrl}/login`, body)
       .then((res) => {
-        localStorage.setItem("token", res);
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("name", res.data.name)
         setToken(localStorage.getItem("token"));
+
+        setUser(res.data);
+        console.log(user)
         console.log("Successful login");
         navigate("/home");
         setLoading(false);
