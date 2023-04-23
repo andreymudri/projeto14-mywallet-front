@@ -4,20 +4,14 @@ import HomePage from "./pages/HomePage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import TransactionsPage from "./pages/TransactionPage";
-import { useState } from "react";
-import UserContext from "./components/Context/UserContext";
-import TokenContext from "./components/Context/TokenContext";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function App() {
-  const [token, setToken] = useState(undefined);
-  const [user, setUser] = useState({});
+
   return (
     <PagesContainer>
       <BrowserRouter>
-        <UserContext.Provider value={{ user, setUser }}>
-          <TokenContext.Provider value={{ token, setToken }}>
           <Routes>
             <Route path="/" element={<SignInPage />} />
             <Route path="/cadastro" element={<SignUpPage />} />
@@ -27,8 +21,7 @@ export default function App() {
               element={<TransactionsPage />}
             />
             </Routes>
-            </TokenContext.Provider>
-        </UserContext.Provider>
+
         
       </BrowserRouter>
     </PagesContainer>

@@ -10,13 +10,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmaSenha, setConfirmaSenha] = useState("");
-  const tokenlocal = localStorage.getItem("token");
   const navigate = useNavigate();
-  const config = {
-    headers: {
-      Authorization: `Bearer ${tokenlocal}`,
-    },
-  };
 
   const objeto = {
     name: nome,
@@ -29,7 +23,6 @@ export default function SignUpPage() {
   function registrar(event) {
     event.preventDefault();
     if (senha !== confirmaSenha) { return alert("As senhas não são iguais.") }
-    console.log(objeto)
     axios
     .post(`${apiUrl}/cadastro`,objeto)
     .then(() => navigate('/'))

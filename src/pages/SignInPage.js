@@ -2,10 +2,8 @@ import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import MyWalletLogo from "../components/MyWalletLogo";
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { apiUrl } from "../App";
-import UserContext from "../components/Context/UserContext";
-import TokenContext from "../components/Context/TokenContext";
 
 export default function SignInPage() {
   
@@ -14,8 +12,6 @@ export default function SignInPage() {
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, setUser } = useContext(UserContext);
-  const {setToken} = useContext(TokenContext)
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -29,10 +25,6 @@ export default function SignInPage() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("name", res.data.name)
         localStorage.setItem("email", res.data.email)
-        setToken(localStorage.getItem("token"));
-
-        setUser(res.data);
-        console.log(user)
         console.log("Successful login");
         navigate("/home");
         setLoading(false);

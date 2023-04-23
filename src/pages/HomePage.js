@@ -3,14 +3,11 @@ import { BiExit } from "react-icons/bi";
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { apiUrl } from "../App";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
-import UserContext from "../components/Context/UserContext";
-import TokenContext from "../components/Context/TokenContext";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const [data, setData] = useState([]);
-  const { user } = useContext(UserContext);
   const tokenlocal = localStorage.getItem("token");
   const navigate = useNavigate();
   if (!tokenlocal) navigate("/");
